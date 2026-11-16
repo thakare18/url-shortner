@@ -3,7 +3,9 @@ package main
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"errors"
 	"fmt"
+	"time"
 )
 
 // struct to represent a URL
@@ -24,7 +26,7 @@ CreationDate: time.Now()
 */
 
 // creating a in memory database to store the urls
-var usrDB = make(map[string]URL)
+var urlDB = make(map[string]URL)
 
 // function to generate a short url
 func generateShortURL(originalURL string) string {
@@ -37,6 +39,27 @@ func generateShortURL(originalURL string) string {
 	fmt.Println("Hash", hash)
 	fmt.Println("hash final string", hash[:8])
 	return hash[:8]
+}
+
+// function to create a short url and store it into an database
+func createURL(originalURL string) string {
+	shortURL := generateShortURL(originalURL)
+	id := shortURL // gereating id from short url
+	urlDB[id] = URL{
+		ID:           id,
+		OriginalURL:  originalURL,
+		ShortURL:     shortURL,
+		CreationDate: time.Now().Format(time.RFC3339),
+	}
+	return shortURL
+}
+
+func getURL(id string) (URL, error) {
+	url, ok := urlDB[id]
+	if !ok {
+		return URL{}, errors.New("URL not found")
+	}
+	return url, nil
 }
 
 func main() {
