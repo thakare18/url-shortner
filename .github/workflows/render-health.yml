@@ -1,0 +1,35 @@
+name: Render health check
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Feature: ten-minute checks, offset from the busy start of each hour (UTC).
+    - cron: "3,13,23,33,43,53 * * * *"
+
+permissions: {}
+
+concurrency:
+  group: render-health-check
+  cancel-in-progress: false
+
+jobs:
+  health:
+    if: ${{ vars.RENDER_BACKEND_URL != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      # Feature: no checkout or MongoDB credentials; only the public liveness endpoint is requested.
+      - name: Check backend health
+        env:
+          BACKEND_URL: ${{ vars.RENDER_BACKEND_URL }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! "$BACKEND_URL" =~ ^https://[a-zA-Z0-9-]+\.onrender\.com/?$ ]]; then
+            echo "Set RENDER_BACKEND_URL to your https://SERVICE.onrender.com origin."
+            exit 1
+          fi
+          curl --fail --silent --show-error \
+            --connect-timeout 15 --max-time 90 \
+            --retry 1 --retry-delay 10 --retry-max-time 190 \
+            "${BACKEND_URL%/}/api/health"
