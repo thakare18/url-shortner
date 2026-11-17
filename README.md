@@ -16,7 +16,7 @@ QuickShortURL turns long HTTP(S) URLs into compact, shareable links. The interfa
 
 Next.js presents the interface and proxies requests to Go. Go validates input, encrypts destinations, and saves records in MongoDB Atlas. Shared links work independently of the browser that created them. Frontend and backend have separate folders and deployment configurations.
 
-**Status:** showcase/demo with working MongoDB integration. Hosting targets are **Vercel frontend + Render backend**. No live deployment URLs have been confirmed in this repository; example domains are illustrative. See [current limitations](#current-limitations) before public launch.
+**Status:** showcase/demo with working MongoDB integration. Hosting targets are **Vercel frontend + Render backend**. No live deployment URLs have been confirmed in this repository; example domains are illustrative.
 
 ## System architecture
 
@@ -571,12 +571,6 @@ go run . -migrate-plaintext
 ```
 
 This encrypts legacy MongoDB destinations in place, removes readable destination fields, and preserves IDs, expiry and reservations. It is repeatable and exits after finishing. It does not rotate keys or erase provider backups.
-
-## Current limitations
-
-This is a demo with storage/encryption safeguards, not a claim of complete production hardening. It currently has no accounts, ownership-verification system, self-service deletion endpoint, rate limiting, malicious-link scanning, click analytics or automatic key rotation. Expired codes remain reserved.
-
-Before unrestricted anonymous public launch, address abuse prevention, monitoring, secret management and recovery. Keep policies aligned with future authentication, tracking or retention changes. Search metadata does not guarantee rankings; health pings do not guarantee uptime.
 
 ## Contact
 
